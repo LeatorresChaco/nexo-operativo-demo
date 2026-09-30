@@ -23,8 +23,10 @@ Tres versiones funcionalmente equivalentes de una demo pública de gestión oper
 - Responsive para desktop/tablet/móvil.
 - Sin login, sin backend y sin datos reales.
 
-## Publicar en GitHub Pages
+## Demo en línea
 
-Subir la carpeta completa como repositorio. En GitHub: Settings → Pages → Deploy from a branch → `main` / root. El `index.html` raíz permite elegir entre los tres estilos.
+Explorá las tres versiones de Nexo Operativo:
 
-Para publicar solo una estética, usar el contenido de la carpeta correspondiente como raíz del repositorio.
+[Ver demo interactiva](https://leatorreschaco.github.io/nexo-operativo-demo/)
+
+La demo está alojada en GitHub Pages y puede utilizarse desde computadora o móvil, sin registro. Todos los datos son sintéticos.
