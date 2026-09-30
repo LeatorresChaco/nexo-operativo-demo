@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Nexo Operativo — demo pública con datos sintéticos de un panel de gestión operativa." />
+  <meta property="og:title" content="Nexo Operativo — Demo pública" />
+  <meta property="og:description" content="Explora una demo pública con indicadores, prioridades, alertas, filtros y detalle por gestión." />
+  <title>Nexo Operativo — Demo pública</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Navegación principal">
+      <a class="side-brand" href="#inicio" aria-label="Nexo Operativo - Inicio">
+        <span class="brand-mark">N</span>
+        <span class="brand-name">Nexo<br>Operativo</span>
+      </a>
+      <nav class="side-nav">
+        <a class="nav-item active" href="#inicio"><span class="nav-icon">⌂</span><span>Inicio</span></a>
+        <a class="nav-item" href="#cartera"><span class="nav-icon">▣</span><span>Cartera</span></a>
+        <a class="nav-item" href="#seguimiento"><span class="nav-icon">↗</span><span>Seguimiento</span></a>
+        <a class="nav-item" href="#reportes"><span class="nav-icon">▥</span><span>Reportes</span></a>
+        <a class="nav-item" href="#alertas"><span class="nav-icon">!</span><span>Alertas</span></a>
+        <button class="nav-item nav-button" id="aboutBtn" type="button"><span class="nav-icon">?</span><span>Qué demuestra</span></button>
+      </nav>
+      <div class="side-proof">
+        <strong>Datos 100% sintéticos</strong>
+        <span>Acceso público</span>
+        <span>Sin login</span>
+      </div>
+    </aside>
+
+    <div class="main-column">
+      <header class="topbar" id="inicio">
+        <div class="title-block">
+          <div class="title-line"><h1>Nexo <span>Operativo</span></h1><span class="demo-badge">DEMO PÚBLICA</span></div>
+          <p>Panel de gestión para entender qué pasa, qué requiere atención y qué viene después.</p>
+        </div>
+        <div class="top-actions">
+          <label class="top-search"><span class="search-icon">⌕</span><input id="headerSearch" type="search" placeholder="Buscar proyectos, clientes, estados..." /></label>
+          <button class="icon-btn" type="button" aria-label="Alertas" data-scroll-target="alertas">●</button>
+          <div class="profile"><span class="avatar">AP</span><span><strong>Ana Pérez</strong><small>Nexo Operativo</small></span></div>
+        </div>
+      </header>
+
+      <main>
+        <section class="demo-note">
+          <div class="demo-note-main"><span class="info-icon">i</span><strong>Datos 100% sintéticos · acceso público · sin login</strong></div>
+          <div class="freshness"><span id="consultedAt">Consultado: —</span><span>Datos demo: 22/09/2026 18:30</span></div>
+        </section>
+
+        <section class="kpi-grid" id="kpiGrid" aria-label="Indicadores clave"></section>
+
+        <section class="dashboard-grid" id="seguimiento">
+          <article class="panel priorities-panel">
+            <div class="section-head">
+              <div><p class="eyebrow">ATENCIÓN SUGERIDA</p><h2>Qué conviene mirar primero</h2></div>
+              <button class="text-btn" type="button" data-scroll-target="cartera">Ver cartera completa →</button>
+            </div>
+            <div class="priority-list" id="priorityList"></div>
+          </article>
+
+          <article class="panel distribution-panel" id="reportes">
+            <div class="section-head">
+              <div><p class="eyebrow">ESTADO DE CARTERA</p><h2>Distribución actual</h2></div>
+              <button class="text-btn" id="clearStatusFilter" type="button">Limpiar filtro</button>
+            </div>
+            <div class="pipeline" id="pipeline"></div>
+            <div class="portfolio-total"><strong id="portfolioTotal">—</strong><span>gestiones en total</span><small>Visión completa del estado de tu cartera operativa.</small></div>
+          </article>
+        </section>
+
+        <section class="panel alert-panel" id="alertas">
+          <div class="section-head">
+            <div><p class="eyebrow">RIESGOS Y EXCEPCIONES</p><h2>Alertas que requieren contexto</h2></div>
+            <span class="status-dot"><i></i><span id="alertCount">—</span></span>
+          </div>
+          <div class="alerts-grid" id="alertsGrid"></div>
+        </section>
+
+        <section class="panel operations-panel" id="cartera">
+          <div class="section-head operations-head">
+            <div><p class="eyebrow">EXPLORAR</p><h2>Gestiones</h2></div>
+            <div class="table-actions">
+              <button class="ghost-btn compact" id="exportBtn" type="button">Exportar vista CSV</button>
+              <button class="ghost-btn compact" id="resetBtn" type="button">Restablecer</button>
+            </div>
+          </div>
+
+          <div class="filters">
+            <label class="search-wrap"><span class="sr-only">Buscar</span><input id="searchInput" type="search" placeholder="Buscar cliente, categoría, región..." /></label>
+            <select id="statusFilter" aria-label="Filtrar por estado"><option value="">Todos los estados</option></select>
+            <select id="responsibleFilter" aria-label="Filtrar por responsable"><option value="">Todos los equipos</option></select>
+            <select id="regionFilter" aria-label="Filtrar por región"><option value="">Todas las regiones</option></select>
+            <select id="categoryFilter" aria-label="Filtrar por categoría"><option value="">Todas las categorías</option></select>
+          </div>
+
+          <div class="results-meta"><span id="resultsCount">—</span><span id="activeFilterText">Sin filtros aplicados</span></div>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>Gestión</th><th>Estado</th><th>Categoría</th><th>Región</th><th>Monto</th><th>Responsable</th><th>Próxima acción</th></tr></thead>
+              <tbody id="casesTable"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="public-explainer">
+          <article><span class="step-num">01</span><h3>Centraliza</h3><p>Estados, responsables, montos y próximas acciones en una sola vista.</p></article>
+          <article><span class="step-num">02</span><h3>Prioriza</h3><p>Separa espera externa de acción propia y resalta riesgos o vencimientos.</p></article>
+          <article><span class="step-num">03</span><h3>Explica</h3><p>Cada indicador puede rastrearse hasta gestiones concretas.</p></article>
+          <article><span class="step-num">04</span><h3>Se adapta</h3><p>Ventas, pedidos, soporte, compras, proyectos o expedientes.</p></article>
+        </section>
+
+        <footer class="footer">
+          <div><strong>Nexo Operativo</strong> · Demo de portfolio con datos sintéticos.</div>
+          <div>No es un sistema productivo. Una implementación real incorporaría autenticación, roles, auditoría y conexión a fuentes vivas.</div>
+        </footer>
+      </main>
+    </div>
+  </div>
+
+  <div class="drawer-backdrop" id="drawerBackdrop" hidden></div>
+  <aside class="drawer" id="detailDrawer" aria-hidden="true" aria-label="Detalle de gestión">
+    <button class="drawer-close" id="drawerClose" aria-label="Cerrar">×</button>
+    <div id="drawerContent"></div>
+  </aside>
+
+  <dialog id="aboutDialog">
+    <button class="dialog-close" id="aboutClose" aria-label="Cerrar">×</button>
+    <p class="eyebrow">SOBRE ESTA DEMO</p>
+    <h2>Una demostración pública de capacidad, no datos reales.</h2>
+    <p>La demo muestra cómo una operación dispersa puede transformarse en una interfaz navegable con indicadores, atención sugerida, alertas, filtros y detalle por caso.</p>
+    <div class="dialog-grid">
+      <div><strong>Lo que sí demuestra</strong><ul><li>Diseño de información operativa.</li><li>Reglas determinísticas visibles.</li><li>Filtros, búsqueda y exportación.</li><li>Arquitectura reutilizable.</li></ul></div>
+      <div><strong>Lo que no pretende ser</strong><ul><li>No es un CRM completo.</li><li>No escribe datos reales.</li><li>No ejecuta transacciones.</li><li>No sustituye controles de seguridad productivos.</li></ul></div>
+    </div>
+  </dialog>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
