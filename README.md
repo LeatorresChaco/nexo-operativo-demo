@@ -46,9 +46,9 @@ La medición permite:
 
 ### Línea base
 
-Las primeras **4 visitas** registradas corresponden a la verificación técnica de
-la integración: una visita a la portada y una a cada variante. No representan
-usuarios externos.
+Al finalizar la instalación y la prueba de eventos quedó una línea base técnica
+de **14 registros**: **8 visitas de página** y **6 eventos de interacción**. No
+representan usuarios externos y deben excluirse al interpretar el tráfico real.
 
 ### Límites de interpretación
 
@@ -75,5 +75,5 @@ Los eventos se cuentan una sola vez por tipo durante cada carga de página. No s
 envían a GoatCounter nombres, identificadores de gestiones, texto buscado,
 valores seleccionados ni datos contenidos en la demo.
 
-Las primeras apariciones de estos eventos pueden corresponder a verificaciones
-técnicas realizadas durante la instalación.
+La primera aparición de cada uno de los seis eventos corresponde a la
+verificación técnica realizada durante la instalación.
