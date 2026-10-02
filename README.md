@@ -59,5 +59,21 @@ usuarios externos.
 - Algunos bloqueadores de contenido pueden impedir el registro.
 - El panel de estadísticas se mantiene privado.
 
-Como siguiente iteración se evaluará medir eventos de interacción, por ejemplo:
-uso de filtros, apertura del detalle de una gestión y exportación CSV.
+### Eventos de interacción
+
+Desde el **2 de octubre de 2026** también se registran eventos genéricos para
+distinguir una visita superficial de una prueba real de la demo:
+
+- selección de una variante visual;
+- apertura del detalle de una gestión;
+- aplicación de filtros;
+- uso del buscador;
+- exportación CSV;
+- apertura de la explicación de la demo.
+
+Los eventos se cuentan una sola vez por tipo durante cada carga de página. No se
+envían a GoatCounter nombres, identificadores de gestiones, texto buscado,
+valores seleccionados ni datos contenidos en la demo.
+
+Las primeras apariciones de estos eventos pueden corresponder a verificaciones
+técnicas realizadas durante la instalación.
