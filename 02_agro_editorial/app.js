@@ -6,6 +6,25 @@
   const fmtMoney = new Intl.NumberFormat('es-AR', { style:'currency', currency:'ARS', maximumFractionDigits:0 });
   const fmtDate = new Intl.DateTimeFormat('es-AR', { day:'2-digit', month:'2-digit', year:'numeric' });
   const today = new Date('2026-09-23T12:00:00');
+  const analyticsVariant = location.pathname.split('/').filter(Boolean).pop() || 'landing';
+  const trackedAnalyticsEvents = new Set();
+
+  function trackEventOnce(name, title) {
+    const path = `interaction/${name}/${analyticsVariant}`;
+    if (trackedAnalyticsEvents.has(path)) return;
+    trackedAnalyticsEvents.add(path);
+
+    let attempts = 0;
+    const send = () => {
+      if (window.goatcounter && typeof window.goatcounter.count === 'function') {
+        window.goatcounter.count({ path, title, event: true });
+        return;
+      }
+      attempts += 1;
+      if (attempts < 25) setTimeout(send, 100);
+    };
+    send();
+  }
   const statusOrder = ['En ejecución','Observado','En análisis','Aprobado','Espera cliente','Completado','Cancelado'];
 
   function parseDate(s) { const d = new Date(s + 'T12:00:00'); return Number.isNaN(d.getTime()) ? null : d; }
@@ -119,6 +138,7 @@
   }
   function openCase(id) {
     const c = cases.find(x => x.id === id); if (!c) return;
+    trackEventOnce('case-opened', `Interaction: case opened (${analyticsVariant})`);
     const d = daysUntil(c.due);
     $('drawerContent').innerHTML = `<div class="detail-id">${c.id}</div><h2>${c.client}</h2><p class="summary">${c.summary}</p><div class="detail-grid"><div class="detail-box"><span>Estado</span><strong>${c.status}</strong></div><div class="detail-box"><span>Monto</span><strong>${fmtMoney.format(c.amount)}</strong></div><div class="detail-box"><span>Categoría</span><strong>${c.category}</strong></div><div class="detail-box"><span>Región</span><strong>${c.region}</strong></div><div class="detail-box"><span>Responsable</span><strong>${c.responsible}</strong></div><div class="detail-box"><span>Vencimiento</span><strong>${fmtDate.format(parseDate(c.due))}${d>=0?` · ${d} días`:''}</strong></div></div><div class="detail-section"><h3>Próxima acción</h3><p>${c.nextAction}</p></div><div class="detail-section"><h3>Alerta / contexto</h3><p>${c.alert}</p></div><div class="detail-section"><h3>Última actualización</h3><p>${fmtDate.format(parseDate(c.lastUpdate))} · Riesgo ${c.risk} · ${c.type}</p></div>`;
     $('drawerBackdrop').hidden = false; $('detailDrawer').classList.add('open'); $('detailDrawer').setAttribute('aria-hidden','false');
@@ -126,25 +146,26 @@
   function closeDrawer() { $('detailDrawer').classList.remove('open'); $('detailDrawer').setAttribute('aria-hidden','true'); setTimeout(() => $('drawerBackdrop').hidden = true, 180); }
   function resetFilters() { Object.assign(state,{search:'',status:'',responsible:'',region:'',category:''}); ['searchInput','headerSearch'].forEach(id=>$(id).value=''); ['statusFilter','responsibleFilter','regionFilter','categoryFilter'].forEach(id=>$(id).value=''); renderTable(); }
   function exportCSV() {
+    trackEventOnce('csv-exported', `Interaction: CSV exported (${analyticsVariant})`);
     const rows = filteredCases();
     const headers = ['ID','Cliente','Estado','Región','Categoría','Monto','Responsable','Tipo','Riesgo','Vencimiento','Última actualización','Próxima acción'];
     const esc = v => `"${String(v ?? '').replaceAll('"','""')}"`;
     const csv = [headers, ...rows.map(c => [c.id,c.client,c.status,c.region,c.category,c.amount,c.responsible,c.type,c.risk,c.due,c.lastUpdate,c.nextAction])].map(r => r.map(esc).join(',')).join('\n');
     const blob = new Blob(['\ufeff'+csv], {type:'text/csv;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='nexo-operativo-demo.csv'; a.click(); URL.revokeObjectURL(a.href);
   }
-  function applySearch(v) { state.search=v; $('searchInput').value=v; $('headerSearch').value=v; renderTable(); }
+  function applySearch(v) { state.search=v; $('searchInput').value=v; $('headerSearch').value=v; if(v.trim().length >= 2) trackEventOnce('search-used', `Interaction: search used (${analyticsVariant})`); renderTable(); }
   function bindEvents() {
     document.addEventListener('click', (e) => {
       const caseEl=e.target.closest('[data-case-id]'); if(caseEl) openCase(caseEl.dataset.caseId);
-      const statusEl=e.target.closest('[data-status-filter]'); if(statusEl){ state.status=statusEl.dataset.statusFilter; $('statusFilter').value=state.status; renderTable(); $('cartera').scrollIntoView({behavior:'smooth'}); }
+      const statusEl=e.target.closest('[data-status-filter]'); if(statusEl){ trackEventOnce('filter-used', `Interaction: filter used (${analyticsVariant})`); state.status=statusEl.dataset.statusFilter; $('statusFilter').value=state.status; renderTable(); $('cartera').scrollIntoView({behavior:'smooth'}); }
       const scrollEl=e.target.closest('[data-scroll-target]'); if(scrollEl){ const target=document.getElementById(scrollEl.dataset.scrollTarget); if(target) target.scrollIntoView({behavior:'smooth'}); }
     });
     $('clearStatusFilter').addEventListener('click',()=>{state.status='';$('statusFilter').value='';renderTable();});
     $('drawerClose').addEventListener('click',closeDrawer); $('drawerBackdrop').addEventListener('click',closeDrawer);
     $('resetBtn').addEventListener('click',resetFilters); $('exportBtn').addEventListener('click',exportCSV);
-    $('aboutBtn').addEventListener('click',()=>$('aboutDialog').showModal()); $('aboutClose').addEventListener('click',()=>$('aboutDialog').close());
+    $('aboutBtn').addEventListener('click',()=>{trackEventOnce('about-opened', `Interaction: about opened (${analyticsVariant})`);$('aboutDialog').showModal();}); $('aboutClose').addEventListener('click',()=>$('aboutDialog').close());
     $('searchInput').addEventListener('input',e=>applySearch(e.target.value)); $('headerSearch').addEventListener('input',e=>applySearch(e.target.value));
-    [['statusFilter','status'],['responsibleFilter','responsible'],['regionFilter','region'],['categoryFilter','category']].forEach(([id,key])=>$(id).addEventListener('change',e=>{state[key]=e.target.value;renderTable();}));
+    [['statusFilter','status'],['responsibleFilter','responsible'],['regionFilter','region'],['categoryFilter','category']].forEach(([id,key])=>$(id).addEventListener('change',e=>{if(e.target.value) trackEventOnce('filter-used', `Interaction: filter used (${analyticsVariant})`);state[key]=e.target.value;renderTable();}));
     document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrawer();});
   }
   function init() {
